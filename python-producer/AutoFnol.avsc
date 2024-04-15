@@ -1,0 +1,98 @@
+{
+    "type": "record",
+    "namespace": "com.doherty.claims",
+    "name": "fnol",
+    "doc": "Schema for First Notice of Loss (FNOL)",
+    "fields": [
+      {
+        "name": "account_id",
+        "type": "int",
+        "default": 0,
+        "doc": "The Account ID of the policyholder who submitted the claim.  This will be set by the web service that sends claims from web/mobile app to the claims engine."
+      },
+      {
+        "name": "loss_type",
+        "type": "string",
+        "default": "OTHER",
+        "doc": "The type of loss.  Options are ACCIDENT, THEFT, or OTHER."
+      },
+      {
+        "name": "date_of_loss",
+        "type": "int",
+        "logicalType": "date",
+        "default": 0,
+        "doc": "Date the loss occurred, as measured in days from the Unix epoch.  Date will be inputed by user on UI and then transformed to an int by the Kafka producer."
+      },
+      {
+        "name": "date_of_fnol",
+        "type": "int",
+        "logicalType": "date",
+        "default": 0,
+        "doc": "Date the claim was submitted by policyholder.  Will be added automatically by the Kafka producer."
+      },
+      {
+        "name": "state_of_loss",
+        "type": "string",
+        "default": "N/A",
+        "doc": "For US claims: the state in which the loss occurred."
+      },
+      {
+        "name": "amount_of_loss",
+        "type": "int",
+        "default": 0,
+        "doc": "For accidents, the cost of repairs.  For theft or totals, the total cost of the vehicle."
+      },
+      {
+        "name": "police_report_uploaded",
+        "type": "boolean",
+        "default": false,
+        "doc": "If the user uploads a police report with the claim in the UI, this will get set to true.  In a real claims system, the fnol events would also have some way to reference the police report in storage."
+      },
+      {
+        "name": "pictures_needed",
+        "type": "boolean",
+        "default": false,
+        "doc": "If the claim requires photo evidence, either for proof or for analysis."
+      },
+      {
+        "name": "pictures_uploaded",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "other_parties",
+        "type": {
+          "type": "array",
+          "items":{
+            "name": "other_party",
+            "type": "record",
+            "fields":[
+              {
+                "name": "name",
+                "type": "string",
+                "default": ""
+              },
+              {
+                "name": "note",
+                "type": "string",
+                "description": "Note about who the person was in the event such as other driver, passenger, etc.",
+                "default": ""
+              },
+              {
+                "name": "phone_number",
+                "type": "int",
+                "default": 0
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "default": ""
+              }
+            ]
+          }
+        },
+        "doc": "Any other relevant parties to the accident such as passengers, other drivers, or bystanders",
+        "default": []
+      }
+    ]
+  }

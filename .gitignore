@@ -1,0 +1,6 @@
+.accounts
+scratch.txt
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl
+.terraform/
