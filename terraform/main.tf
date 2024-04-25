@@ -90,13 +90,27 @@ resource "confluent_api_key" "claims-app-manager-kafka-api-key" {
   }
 }
 
-
-resource "confluent_kafka_topic" "auto-fnol" {
+# Create Oracle redo log topic 
+resource "confluent_kafka_topic" "oracle_redo_log" {
   kafka_cluster {
     id = confluent_kafka_cluster.dedicated.id
   }
-  topic_name         = "auto-fnol"
-  rest_endpoint      = confluent_kafka_cluster.dedicated.rest_endpoint
+
+  topic_name       = "OracleCdcSourceConnector-customers-redo-log"
+  rest_endpoint    = confluent_kafka_cluster.dedicated.rest_endpoint
+  partitions_count = 1
+  credentials {
+    key    = confluent_api_key.claims-app-manager-kafka-api-key.id
+    secret = confluent_api_key.claims-app-manager-kafka-api-key.secret
+  }
+}
+
+resource "confluent_kafka_topic" "auto_fnol" {
+  kafka_cluster {
+    id = confluent_kafka_cluster.dedicated.id
+  }
+  topic_name    = "auto_fnol"
+  rest_endpoint = confluent_kafka_cluster.dedicated.rest_endpoint
   credentials {
     key    = confluent_api_key.claims-app-manager-kafka-api-key.id
     secret = confluent_api_key.claims-app-manager-kafka-api-key.secret
@@ -150,22 +164,19 @@ resource "confluent_api_key" "claims-env-manager-schema-registry-api-key" {
 }
 
 
-resource "confluent_schema" "auto-fnol" {
+resource "confluent_schema" "auto_fnol" {
   schema_registry_cluster {
     id = confluent_schema_registry_cluster.sr_package.id
   }
   rest_endpoint = confluent_schema_registry_cluster.sr_package.rest_endpoint
-  subject_name = "auto-fnol-value"
-  format = "AVRO"
-  schema = file("./schemas/avro/auto-fnol.avsc")
+  subject_name  = "auto_fnol-value"
+  format        = "AVRO"
+  schema        = file("./schemas/avro/auto_fnol.avsc")
   credentials {
     key    = confluent_api_key.claims-env-manager-schema-registry-api-key.id
     secret = confluent_api_key.claims-env-manager-schema-registry-api-key.secret
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 
