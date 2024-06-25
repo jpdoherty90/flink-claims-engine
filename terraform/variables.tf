@@ -25,13 +25,11 @@ variable "rds_instance_identifier" {
 variable "rds_username" {
   description = "Amazon RDS (Oracle) master username"
   type        = string
-  default     = "admin"
 }
 
 variable "rds_password" {
   description = "Amazon RDS (Oracle) database password. You can change it through command line"
   type        = string
-  default     = "claims-c0nflu3nt!"
 }
 
 variable "rds_vpc_cidr" {
@@ -50,4 +48,56 @@ variable "rds_subnet_2_cidr" {
   type        = string
   description = "IPv4 CIDR for  RDS Oracle subnet 2"
   default     = "10.0.2.0/24"
+}
+
+variable "kafka_api_key" {
+  description = "Kafka cluster API key"
+  type        = string
+}
+
+variable "kafka_api_secret" {
+  description = "Kafka cluster API secret"
+  type        = string
+}
+
+
+variable "mongodbatlas_public_key" {
+  description = "The public API key for MongoDB Atlas"
+  type        = string
+}
+
+variable "mongodbatlas_private_key" {
+  description = "The private API key for MongoDB Atlas"
+  type        = string
+}
+
+# Atlas Organization ID 
+variable "mongodbatlas_org_id" {
+  type        = string
+  description = "MongoDB Atlas Organization ID"
+}
+
+# Atlas Project Name
+variable "mongodbatlas_project_name" {
+  type        = string
+  description = "MongoDB Atlas Project Name"
+  default     = "flink-claims-engine"
+}
+
+variable "mongodbatlas_region" {
+  description = "MongoDB Atlas region https://www.mongodb.com/docs/atlas/reference/amazon-aws/#std-label-amazon-aws"
+  type        = string
+  default     = "US_EAST_1"
+}
+
+variable "mongodbatlas_database_username" {
+  description = "MongoDB Atlas database username. You can change it through command line"
+  type        = string
+  default     = ""
+}
+
+variable "mongodbatlas_database_password" {
+  description = "MongoDB Atlas database password. You can change it through command line"
+  type        = string
+  default     = ""
 }

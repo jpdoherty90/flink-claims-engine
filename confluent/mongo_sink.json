@@ -1,0 +1,18 @@
+{
+    "name": "MongoDbAtlasSinkConnector_0",
+    "config": {
+      "connector.class": "MongoDbAtlasSink",
+      "name": "MongoDbAtlasSinkConnector_0",
+      "input.data.format": "AVRO",
+      "kafka.auth.mode": "KAFKA_API_KEY",
+      "kafka.api.key": "hstdysju",
+      "kafka.api.secret": "",
+      "topics": "rejected_claims,potentially_fraudulent_claims,stf_claims,hitl_claims",
+      "connection.host": "",
+      "connection.user": "",
+      "connection.password": "",
+      "database": "flink-claims",
+      "doc.id.strategy": "FullKeyStrategy",
+      "tasks.max": "1"
+    }
+}

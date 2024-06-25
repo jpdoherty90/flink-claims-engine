@@ -4,6 +4,10 @@ terraform {
       source  = "confluentinc/confluent"
       version = "1.68.0"
     }
+    mongodbatlas = {
+      source  = "mongodb/mongodbatlas"
+      version = "1.12.1"
+    }
   }
 }
 
@@ -31,9 +35,9 @@ resource "confluent_schema_registry_cluster" "sr_package" {
     id = data.confluent_schema_registry_region.sg_package.id
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "confluent_kafka_cluster" "dedicated" {
@@ -85,9 +89,9 @@ resource "confluent_api_key" "claims-app-manager-kafka-api-key" {
     confluent_role_binding.claims-app-manager-kafka-cluster-admin
   ]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 # Create Oracle redo log topic 
@@ -109,8 +113,9 @@ resource "confluent_kafka_topic" "auto_fnol" {
   kafka_cluster {
     id = confluent_kafka_cluster.dedicated.id
   }
-  topic_name    = "auto_fnol"
-  rest_endpoint = confluent_kafka_cluster.dedicated.rest_endpoint
+  topic_name       = "auto_fnol"
+  rest_endpoint    = confluent_kafka_cluster.dedicated.rest_endpoint
+  partitions_count = 1
   credentials {
     key    = confluent_api_key.claims-app-manager-kafka-api-key.id
     secret = confluent_api_key.claims-app-manager-kafka-api-key.secret
@@ -119,9 +124,9 @@ resource "confluent_kafka_topic" "auto_fnol" {
     "confluent.value.schema.validation" = "true"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "confluent_service_account" "claims-env-manager" {
@@ -158,9 +163,9 @@ resource "confluent_api_key" "claims-env-manager-schema-registry-api-key" {
     confluent_role_binding.claims-env-manager-environment-admin
   ]
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 
@@ -177,6 +182,50 @@ resource "confluent_schema" "auto_fnol" {
     secret = confluent_api_key.claims-env-manager-schema-registry-api-key.secret
   }
 
+}
+
+resource "confluent_connector" "customers_oracle_cdc" {
+
+  environment {
+    id = confluent_environment.flink_claims_engine.id
+  }
+
+  kafka_cluster {
+    id = confluent_kafka_cluster.dedicated.id
+  }
+
+  config_sensitive = {
+    "kafka.api.key"    = var.kafka_api_key,
+    "kafka.api.secret" = var.kafka_api_secret
+    "oracle.username"  = var.rds_username,
+    "oracle.password"  = var.rds_password,
+  }
+
+  config_nonsensitive = {
+    "connector.class"         = "OracleCdcSource",
+    "name"                    = "CustomersOracleCDC",
+    "kafka.auth.mode"         = "KAFKA_API_KEY",
+    "oracle.server"           = aws_db_instance.insurance-customers.address,
+    "oracle.port"             = "1521",
+    "oracle.sid"              = "ORCL",
+    "table.inclusion.regex"   = "ORCL[.]ADMIN1[.]CUSTOMERS",
+    "start.from"              = "snapshot",
+    "query.timeout.ms"        = "60000",
+    "redo.log.row.fetch.size" = "1",
+    # NOTE: these template variable throws an error in terraform so I'm hardcoding below
+    # "table.topic.name.template"       = "${databaseName}.${schemaName}.${tableName}",
+    "table.topic.name.template" = "ORCL.ADMIN1.CUSTOMERS",
+    "redo.log.topic.name"       = "OracleCdcSourceConnector-customers-redo-log",
+    "numeric.mapping"           = "best_fit_or_double",
+    "output.data.key.format"    = "AVRO",
+    "output.data.value.format"  = "AVRO",
+    "tasks.max"                 = "1",
+    "heartbeat.interval.ms": "1800000"
+  }
+
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 

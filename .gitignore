@@ -7,3 +7,4 @@ terraform.tfstate.backup
 env_vars.sh
 resources.json
 client.properties
+__pycache__
