@@ -1,0 +1,10 @@
+.accounts
+scratch.txt
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl
+.terraform/
+env_vars.sh
+resources.json
+client.properties
+__pycache__
