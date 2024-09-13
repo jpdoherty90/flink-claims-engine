@@ -272,7 +272,7 @@ END;
 
 
 -- These last 2 statements are a simple example of streaming analytics
--- Calculating the total dollar value of all claims submitted in each 30 second window
+-- Calculating the total dollar value of all validated claims in each 30 second window
 -- and then emitting the result into a "thirty_second_sums" topic
 create table if not exists thirty_second_sums(
   `window_start` TIMESTAMP_LTZ(3),
